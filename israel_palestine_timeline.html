@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two Narratives: A Century in Palestine / Israel</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --il-bg: #dce8f5;
+    --il-card: #eef5fc;
+    --il-accent: #1a4a8a;
+    --il-text: #0d2545;
+    --il-muted: #4a6a9a;
+    --il-border: #a8c4e0;
+    --il-tag: #1a4a8a;
+    --il-tag-text: #dce8f5;
+
+    --pa-bg: #f0e6d2;
+    --pa-card: #faf4e8;
+    --pa-accent: #7a3b1e;
+    --pa-text: #3a1a00;
+    --pa-muted: #8a5a3a;
+    --pa-border: #d4a87a;
+    --pa-tag: #7a3b1e;
+    --pa-tag-text: #f0e6d2;
+
+    --axis-bg: #1c1c1c;
+    --axis-text: #f5f0e8;
+    --axis-height: 72px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #111;
+    color: #f5f0e8;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  #site-header {
+    background: #111;
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+    border-bottom: 1px solid #333;
+    position: relative;
+  }
+  #site-header .eyebrow {
+    font-family: 'Courier New', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 1rem;
+  }
+  #site-header h1 {
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: #f5f0e8;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+  #site-header h1 em {
+    font-style: italic;
+    color: #c0b090;
+  }
+  #site-header .subtitle {
+    font-size: 1rem;
+    color: #888;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .perspective-labels {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .lbl-il { color: var(--il-accent); background: var(--il-bg); padding: 4px 14px; border-radius: 2px; }
+  .lbl-pa { color: var(--pa-accent); background: var(--pa-bg); padding: 4px 14px; border-radius: 2px; }
+
+  /* NAV */
+  #year-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #1c1c1c;
+    border-bottom: 1px solid #333;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  #year-nav::-webkit-scrollbar { display: none; }
+  .nav-inner {
+    display: flex;
+    gap: 0;
+    min-width: max-content;
+    padding: 0 1rem;
+  }
+  .nav-item {
+    font-family: 'Courier New', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: #666;
+    padding: 0.6rem 0.9rem;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .nav-item:hover { color: #f5f0e8; }
+  .nav-item.active { color: #f5f0e8; border-bottom-color: #c0b090; }
+
+  /* EVENTS */
+  .event-block {
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .event-block.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ISRAELI HALF */
+  .il-half {
+    background: var(--il-bg);
+    padding: 2.5rem 2rem 2rem;
+    display: flex;
+    justify-content: center;
+  }
+  .il-card {
+    max-width: 760px;
+    width: 100%;
+  }
+  .il-card .source-tag {
+    display: inline-block;
+    background: var(--il-tag);
+    color: var(--il-tag-text);
+    font-family: 'Courier New', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    margin-bottom: 0.9rem;
+    border-radius: 1px;
+  }
+  .il-card h2 {
+    font-size: 1.35rem;
+    font-weight: 400;
+    color: var(--il-text);
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+  .il-card p {
+    font-size: 0.93rem;
+    line-height: 1.78;
+    color: var(--il-muted);
+    max-width: 660px;
+  }
+
+  /* AXIS */
+  .axis-strip {
+    background: var(--axis-bg);
+    height: var(--axis-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-top: 2px solid #333;
+    border-bottom: 2px solid #333;
+  }
+  .axis-strip::before, .axis-strip::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 1px;
+    background: #333;
+    width: calc(50% - 100px);
+  }
+  .axis-strip::before { left: 0; }
+  .axis-strip::after { right: 0; }
+
+  .axis-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+    text-align: center;
+  }
+  .year-badge {
+    font-family: 'Courier New', monospace;
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: #c0b090;
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+  .event-label {
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #666;
+    margin-top: 3px;
+  }
+
+  /* PALESTINIAN HALF */
+  .pa-half {
+    background: var(--pa-bg);
+    padding: 2rem 2rem 2.5rem;
+    display: flex;
+    justify-content: center;
+  }
+  .pa-card {
+    max-width: 760px;
+    width: 100%;
+  }
+  .pa-card .source-tag {
+    display: inline-block;
+    background: var(--pa-tag);
+    color: var(--pa-tag-text);
+    font-family: 'Courier New', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    margin-bottom: 0.9rem;
+    border-radius: 1px;
+  }
+  .pa-card h2 {
+    font-size: 1.35rem;
+    font-weight: 400;
+    color: var(--pa-text);
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+  .pa-card p {
+    font-size: 0.93rem;
+    line-height: 1.78;
+    color: var(--pa-muted);
+    max-width: 660px;
+  }
+
+  /* SPACER between events */
+  .event-sep {
+    height: 2px;
+    background: #111;
+  }
+
+  /* FOOTER */
+  footer {
+    background: #111;
+    border-top: 1px solid #222;
+    padding: 3rem 2rem;
+    text-align: center;
+    font-size: 0.82rem;
+    color: #555;
+    font-style: italic;
+    line-height: 1.8;
+  }
+  footer strong { color: #888; font-style: normal; }
+
+  @media (max-width: 600px) {
+    #site-header { padding: 2rem 1rem 1.5rem; }
+    .il-half, .pa-half { padding: 1.5rem 1rem; }
+    .il-card h2, .pa-card h2 { font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header id="site-header">
+  <p class="eyebrow">Historical perspectives &nbsp;·&nbsp; 20th Century</p>
+  <h1>Two Narratives,<br><em>One Century</em></h1>
+  <p class="subtitle">A parallel timeline of the Israel–Palestine conflict, presenting the same events as understood from each respective perspective. These narratives represent sincere, widely-held viewpoints rather than a single authoritative account.</p>
+  <div class="perspective-labels">
+    <span class="lbl-il">Israeli Perspective</span>
+    <span class="lbl-pa">Palestinian Perspective</span>
+  </div>
+</header>
+
+<nav id="year-nav" aria-label="Timeline navigation">
+  <div class="nav-inner" id="nav-inner"></div>
+</nav>
+
+<main id="timeline"></main>
+
+<footer>
+  <p><strong>A note on this timeline:</strong> Historical interpretation is inherently contested. Each card below represents how events have been broadly understood within that community's own narrative — not the only possible reading, nor a complete account. Primary sources, scholarly histories, and voices from within each community offer far greater depth than can be captured here.</p>
+</footer>
+
+<script>
+const events = [
+  {
+    year: "1904–1914",
+    slug: "1904",
+    label: "The Aliyot",
+    il: {
+      title: "The Pioneers Arrive",
+      body: "The Second Aliyah brings tens of thousands of Zionist pioneers to Ottoman Palestine, establishing agricultural communes (kibbutzim), draining swamps, and reviving Hebrew as a spoken language. In 1909, Tel Aviv is founded as the first modern all-Jewish city. These years forge the institutions — the Haganah's precursors, the Histadrut labor federation, Hebrew-language culture — that will sustain a Jewish state. The movement is driven not by conquest but by the urgent need for a refuge after centuries of persecution, pogroms, and statelessness in Europe."
+    },
+    pa: {
+      title: "Land and Displacement Begin",
+      body: "Arab Palestinians form the vast majority of the population in Ottoman Palestine, living in villages, towns, and agricultural communities across the land. The arrival of Zionist settlers — backed by the Jewish National Fund's land purchases — begins a transformation that locals observe with growing alarm. Palestinian intellectuals and newspapers raise early warnings that Zionist immigration aims not merely at coexistence, but at establishing a separate national entity. Tensions emerge at the village level as land transfers displace Arab tenant farmers who had worked those fields for generations."
+    }
+  },
+  {
+    year: "1917",
+    slug: "1917",
+    label: "The Balfour Declaration",
+    il: {
+      title: "International Recognition",
+      body: "British Foreign Secretary Arthur James Balfour's letter to Lord Walter Rothschild declares that His Majesty's Government views with favour \"the establishment in Palestine of a national home for the Jewish people.\" Zionists regard this as a watershed — the first official recognition by a major world power of Jewish national aspirations. Coming during the darkest years of European anti-Semitism, and shortly before the collapse of the Ottoman Empire, the declaration opens a door that had been closed to stateless Jews for millennia. It lends international legitimacy to the Zionist movement and becomes a cornerstone of the British Mandate."
+    },
+    pa: {
+      title: "A Promise Made Without Us",
+      body: "The Balfour Declaration is issued without any consultation with the Arab majority — who at the time constitute roughly 90% of Palestine's population. Palestinians regard it as a colonial act: Britain promising someone else's land to a third party. The declaration's single line protecting \"the civil and religious rights of existing non-Jewish communities\" is seen as wholly inadequate protection against the transformation of a homeland into a Jewish national home. Palestinian leaders immediately protest, warning that the declaration violates promises of Arab self-determination made by Britain during the First World War."
+    }
+  },
+  {
+    year: "1920–1929",
+    slug: "1920",
+    label: "British Mandate Era",
+    il: {
+      title: "Building Institutions Under Fire",
+      body: "The League of Nations grants Britain the Mandate for Palestine, incorporating the Balfour Declaration's language — a major diplomatic victory for Zionism. Jewish immigration grows and Hebrew cultural life flourishes. But violence erupts repeatedly: Arab riots in 1920 and 1921, and the 1929 Hebron massacre, in which Arab mobs kill 67 Jewish residents of a community with ancient roots in the city. These shocks harden Zionist determination to build self-sufficient defensive institutions. The Jewish Agency, Histadrut, and Haganah develop in parallel, preparing for eventual statehood."
+    },
+    pa: {
+      title: "Majority Without Rights",
+      body: "Britain administers Palestine under a Mandate that incorporates Zionist political goals, yet the Arab majority is given no path to self-determination. Palestinian leaders form the Arab Executive to represent their interests, but Britain systematically rebuffs their calls for representative government, knowing that democratic institutions would reflect an Arab majority opposed to the Mandate's Zionist provisions. The 1929 Hebron violence — though condemned — is rooted in Palestinian fears of dispossession and the destabilizing effects of accelerating Jewish immigration on the economic and social fabric of Arab Palestinian life."
+    }
+  },
+  {
+    year: "1936–1939",
+    slug: "1936",
+    label: "The Arab Revolt",
+    il: {
+      title: "Uprising and the Case for Partition",
+      body: "Palestinian Arabs launch a general strike and armed revolt against British rule and Jewish immigration — the longest anti-colonial uprising in the Arab world to that point. Jewish settlements and travelers are attacked repeatedly. The British Peel Commission responds in 1937 by recommending partition of Palestine into separate Jewish and Arab states — the first official endorsement of a two-state solution. Jewish leaders debate but ultimately accept the principle of partition. The revolt also accelerates Jewish self-defense: the Haganah expands its capabilities, and the groundwork for an independent Jewish military is laid."
+    },
+    pa: {
+      title: "A People's Uprising Crushed",
+      body: "The Arab Revolt is a nationalist uprising by Palestinians who see their land and livelihoods being eroded by mass Jewish immigration under British auspices. The revolt begins with a general strike and evolves into an armed insurrection. The British response is ferocious: over 5,000 Palestinians are killed, thousands detained, homes demolished, and the entire Palestinian leadership exiled. The 1939 White Paper limits Jewish immigration — but only after the revolt's leadership has been decimated. The brutal suppression leaves Palestinian society fractured and disarmed on the eve of the decisive confrontation of 1948."
+    }
+  },
+  {
+    year: "1947",
+    slug: "1947",
+    label: "UN Partition Plan",
+    il: {
+      title: "The World Votes for a Jewish State",
+      body: "UN General Assembly Resolution 181 proposes dividing Mandatory Palestine into Jewish and Arab states, with Jerusalem under international administration. Jewish Agency leaders accept the plan — despite receiving only part of their hoped-for territory — as the best achievable international endorsement of statehood. The plan is seen as the international community's moral response to the Holocaust and to centuries of Jewish persecution. When Arab states and Palestinian leaders reject it and violence erupts, Jewish militias prepare to defend the territory allocated to the Jewish state — and more."
+    },
+    pa: {
+      title: "Our Land Divided Without Consent",
+      body: "Resolution 181 allocates 56% of Mandatory Palestine to a Jewish state, despite Jews comprising only about one-third of the population and owning roughly 7% of the land. Palestinians and Arab states reject a plan they view as imposed by external powers — many of them colonial states — who have no right to partition their homeland. Palestinian communities in areas allocated to the Jewish state face an uncertain future in a state where they would be a minority. Civil war breaks out immediately, and the Palestinian community — still recovering from the suppression of the 1936–39 revolt — is fundamentally unprepared for the conflict to come."
+    }
+  },
+  {
+    year: "1948",
+    slug: "1948",
+    label: "Independence / Al-Nakba",
+    il: {
+      title: "The State of Israel is Born",
+      body: "On May 14, 1948, David Ben-Gurion proclaims the establishment of the State of Israel. The following day, five Arab armies invade. Against overwhelming odds, Israeli forces — fighting in what Israelis call the War of Independence — defeat the combined Arab coalition and secure a state. Israel's final borders encompass more territory than the UN partition plan allocated, reflecting the outcome of a war that Israel did not initiate. In its first years, the young state absorbs hundreds of thousands of Jewish refugees: Holocaust survivors from Europe and Jewish communities expelled from Arab countries, at last given a homeland."
+    },
+    pa: {
+      title: "Al-Nakba: The Catastrophe",
+      body: "Al-Nakba — \"The Catastrophe\" — is the defining trauma of Palestinian collective memory. Between 1947 and 1949, approximately 700,000–750,000 Palestinians flee or are expelled from their homes. More than 400 Arab villages are depopulated; many are demolished. Palestinian families lose homes, olive orchards, property, and communities that had been theirs for centuries. Most become refugees in Jordan, Lebanon, Syria, the West Bank, and Gaza — expecting to return, a return that never comes. The Nakba is not simply a side effect of war but a foundational rupture from which Palestinian society has not recovered."
+    }
+  },
+  {
+    year: "1956",
+    slug: "1956",
+    label: "The Suez Crisis",
+    il: {
+      title: "Strategic Gains at Suez",
+      body: "Following Egypt's nationalization of the Suez Canal, Israel joins a secret coalition with Britain and France and launches Operation Kadesh into the Sinai Peninsula. Israeli forces advance to the canal in days, demonstrating impressive military capability. Though the United States and Soviet Union pressure Israel to withdraw — a significant diplomatic setback — Israel extracts a crucial concession: UN peacekeeping forces are deployed to the Sinai, and freedom of navigation through the Straits of Tiran is secured. The episode tests Israel's alliances and reveals the limits of European partnership, accelerating Israel's military relationship with France, including nuclear cooperation."
+    },
+    pa: {
+      title: "Occupation and Reprisals",
+      body: "For Palestinian refugees, the Suez Crisis deepens the regional stalemate that keeps them stateless. Gaza, administered by Egypt since 1948, remains under military rule, with the 200,000-plus Palestinian refugees there living in camps with no political horizon. Palestinian fedayeen fighters launch cross-border raids; Israeli reprisals against Palestinian villages in the West Bank and Gaza kill hundreds of civilians in the years preceding and following Suez. The crisis confirms that the Palestinian cause is hostage to broader Arab state politics — Arab governments use Palestinians as symbols of injustice while pursuing their own national agendas."
+    }
+  },
+  {
+    year: "1967",
+    slug: "1967",
+    label: "The Six-Day War",
+    il: {
+      title: "Six Days That Changed Everything",
+      body: "Facing existential threats — Egyptian troops massing in Sinai, blockade of the Straits of Tiran, Jordanian and Syrian military mobilizations, and annihilationist rhetoric from Arab leaders — Israel launches a preemptive strike on June 5. In six days, Israel defeats three armies and captures the Sinai Peninsula, Gaza Strip, West Bank, and Golan Heights. Jerusalem, divided since 1948, is reunified under Israeli control, and Jews gain access to the Western Wall for the first time in nineteen years. The victory is intoxicating — but also the beginning of an occupation that will define Israeli politics for decades."
+    },
+    pa: {
+      title: "A Second Catastrophe",
+      body: "The Six-Day War produces a second wave of Palestinian displacement: some 300,000 Palestinians flee the West Bank and Gaza during and after the fighting. For Palestinians, Israeli military occupation of all remaining Palestinian territories begins on June 10, 1967. Palestinians in the West Bank and Gaza now live under military administration — facing curfews, administrative detention, land confiscation, and the slow growth of Israeli settlements in the occupied territories. UN Security Council Resolution 242 calls for Israeli withdrawal from occupied territories, establishing the legal framework for peace negotiations that remain unfulfilled decades later."
+    }
+  },
+  {
+    year: "1973",
+    slug: "1973",
+    label: "The Yom Kippur War",
+    il: {
+      title: "Surprise, Shock, and Survival",
+      body: "On Yom Kippur — the holiest day of the Jewish calendar — Egypt and Syria launch coordinated surprise attacks, initially routing Israeli defenses and threatening catastrophic defeat. After desperate fighting and a massive U.S. airlift, Israel mobilizes and ultimately pushes both armies back. The war shatters Israel's sense of military invincibility born in 1967 and leads to a political earthquake: the Labor Party, which had governed since Israel's founding, never fully recovers. The Agranat Commission's investigation of intelligence failures and military unpreparedness exposes deep institutional failures."
+    },
+    pa: {
+      title: "Arab Solidarity and New Recognition",
+      body: "The October War briefly restores Arab honor after the humiliation of 1967, demonstrating that Israel can be surprised and hurt. The Arab oil embargo, linking oil exports to political demands, shows the West that the Arab-Israeli conflict has global economic consequences. Most significantly for Palestinians, the 1974 Arab League summit at Rabat — building on the military momentum — formally recognizes the PLO under Yasser Arafat as the \"sole legitimate representative of the Palestinian people,\" giving Palestinians a recognized political voice on the world stage for the first time."
+    }
+  },
+  {
+    year: "1978–1979",
+    slug: "1978",
+    label: "Camp David Accords",
+    il: {
+      title: "Peace With Egypt",
+      body: "President Jimmy Carter brokers a historic agreement between Prime Minister Menachem Begin and Egyptian President Anwar Sadat at Camp David. Israel returns the entire Sinai Peninsula to Egypt — a significant territorial concession — in exchange for a formal peace treaty and diplomatic recognition: the first Arab state to recognize Israel. The agreement fundamentally transforms Israel's strategic position by removing Egypt, the largest Arab military power, from any future war coalition. Begin and Sadat share the Nobel Peace Prize. Though a cold peace, it holds and eventually warms into something approaching normalization."
+    },
+    pa: {
+      title: "Abandoned by Egypt",
+      body: "Palestinians and nearly all Arab states denounce the Camp David Accords as a betrayal. While the framework includes vague references to Palestinian \"autonomy,\" it explicitly defers — and ultimately avoids — the core issues of Palestinian statehood, Jerusalem, Israeli settlements, and the right of return for refugees. Egypt, in pursuing its own national interest, exits the Arab coalition that had been the main military counterweight to Israel. Egypt is expelled from the Arab League. Palestinians are left with no powerful Arab state advocate, no mechanism for ending the occupation, and the sense that their cause has been sacrificed for Egyptian-Israeli bilateral peace."
+    }
+  },
+  {
+    year: "1982",
+    slug: "1982",
+    label: "The Lebanon War",
+    il: {
+      title: "Into Lebanon",
+      body: "Israel invades Lebanon to destroy PLO military infrastructure after years of cross-border attacks, including the attempted assassination of Israeli Ambassador Shlomo Argov. Israeli forces advance to Beirut; the PLO leadership is evacuated to Tunis under international supervision. The war achieves its military objectives but at severe political cost: the Sabra and Shatila massacre — in which Lebanese Christian Phalangist militias kill hundreds of Palestinian refugees in camps surrounded by Israeli forces — provokes mass protests inside Israel. The Kahan Commission finds Defense Minister Ariel Sharon bears personal responsibility. He resigns."
+    },
+    pa: {
+      title: "Massacre and Exile",
+      body: "The 1982 Lebanon War kills an estimated 17,000–20,000 people, the great majority of them Lebanese and Palestinian civilians. Israeli bombardment of Beirut lasts for weeks. The Sabra and Shatila massacre — in which Phalangist militiamen murder between several hundred and several thousand Palestinian civilians while Israeli forces control access to the camps and illuminate the night with flares — becomes a defining symbol of Palestinian vulnerability and international abandonment. The PLO is forced to relocate its leadership to Tunis, thousands of miles from Palestinian territory. The war scatters Palestinian families still further."
+    }
+  },
+  {
+    year: "1987",
+    slug: "1987",
+    label: "The First Intifada",
+    il: {
+      title: "Uprising in the Territories",
+      body: "A Palestinian uprising (intifada — \"shaking off\") breaks out in Gaza and spreads to the West Bank, confronting Israel with mass civilian resistance: stone-throwing youth, commercial strikes, and civil disobedience. The images — soldiers facing children with rocks — damage Israel's international standing. The Hamas movement emerges during the intifada as a rival to the PLO. The intifada lasts six years; the violence kills hundreds of Palestinians and dozens of Israelis and Israelis in the territories begin to question whether permanent occupation is sustainable. The uprising eventually pushes Israel toward indirect talks with the PLO — resulting in Oslo."
+    },
+    pa: {
+      title: "The People Rise",
+      body: "The First Intifada is a grassroots uprising born of twenty years of military occupation, economic strangulation, and the closure of any political horizon. It begins in Gaza's Jabalia refugee camp in December 1987 and rapidly engulfs the West Bank. Palestinians use mass strikes, boycotts of Israeli goods, and stone-throwing to resist — and the world watches. Over six years, Israeli forces kill more than 1,000 Palestinians; thousands more are imprisoned without trial. The intifada puts Palestinian self-determination back on the global agenda and forces negotiations — but the Oslo process it produces will itself be deeply contested."
+    }
+  },
+  {
+    year: "1993",
+    slug: "1993",
+    label: "The Oslo Accords",
+    il: {
+      title: "Enemies Shake Hands",
+      body: "Secret negotiations in Oslo produce an extraordinary breakthrough: mutual recognition between the State of Israel and the Palestine Liberation Organization. Prime Minister Yitzhak Rabin and PLO Chairman Yasser Arafat shake hands on the White House lawn. The Declaration of Principles establishes the Palestinian Authority and outlines a five-year framework for negotiating permanent status issues. Israel agrees to gradual withdrawal from parts of the West Bank and Gaza, and Palestinian self-governance begins. The agreement is controversial within Israel — the right denounces territorial concessions — but is seen by its supporters as the only path to sustainable security."
+    },
+    pa: {
+      title: "Hope, Betrayal, and Deferred Justice",
+      body: "Oslo brings the Palestinian Authority — a measure of self-governance — and international recognition of the PLO. For many Palestinians, the handshake is a historic moment. But the accords defer the core issues — Jerusalem, refugees, borders, and the fate of Israeli settlements — to a final status negotiation that never arrives. Through the Oslo years, Israeli settlement construction in the West Bank continues and accelerates. Palestinians gain a partial government over fragmented enclaves while Israel retains control of borders, water, airspace, and most of the land. Many Palestinians come to see Oslo not as a path to liberation but as a framework for managing, rather than ending, the occupation."
+    }
+  },
+  {
+    year: "2000",
+    slug: "2000",
+    label: "Camp David II / Second Intifada",
+    il: {
+      title: "An Offer Refused, Violence Returns",
+      body: "Prime Minister Ehud Barak makes what he and U.S. mediators describe as a sweeping offer at Camp David: statehood for Palestine, withdrawal from most of the West Bank and all of Gaza, a division of sovereignty over Jerusalem, and special arrangements for holy sites. Arafat's refusal — without a counter-offer — leads to the collapse of the Oslo process. When Ariel Sharon visits the Temple Mount in September 2000, a Second Intifada explodes. Suicide bombings kill hundreds of Israeli civilians in cafes, buses, and markets. Israel responds with military force, siege, targeted killings, and the construction of a security barrier."
+    },
+    pa: {
+      title: "Al-Aqsa Intifada: Occupation Erupts Again",
+      body: "Palestinians regard the Camp David offer as far short of their minimum requirements: no full sovereignty, retention of Israeli settlement blocs, no resolution of the refugee issue, and arrangements for Jerusalem that Palestinians could not accept. When Ariel Sharon — in their eyes a symbol of Palestinian suffering — makes a provocative visit to Al-Haram Al-Sharif/the Temple Mount, accompanied by hundreds of armed police officers, the second intifada erupts. Israeli military responses to the uprising kill over 3,000 Palestinians in five years. Assassinations, home demolitions, closures, and the construction of a barrier described as an apartheid wall by Palestinians reshape daily life across the West Bank."
+    }
+  }
+];
+
+// Build nav
+const navInner = document.getElementById('nav-inner');
+events.forEach(e => {
+  const a = document.createElement('a');
+  a.className = 'nav-item';
+  a.href = `#evt-${e.slug}`;
+  a.textContent = e.year;
+  a.dataset.slug = e.slug;
+  navInner.appendChild(a);
+});
+
+// Build timeline
+const timeline = document.getElementById('timeline');
+events.forEach((e, i) => {
+  const block = document.createElement('div');
+  block.className = 'event-block';
+  block.id = `evt-${e.slug}`;
+
+  block.innerHTML = `
+    ${i > 0 ? '<div class="event-sep"></div>' : ''}
+    <div class="il-half">
+      <div class="il-card">
+        <span class="source-tag">Israeli Perspective</span>
+        <h2>${e.il.title}</h2>
+        <p>${e.il.body}</p>
+      </div>
+    </div>
+    <div class="axis-strip">
+      <div class="axis-content">
+        <span class="year-badge">${e.year}</span>
+        <span class="event-label">${e.label}</span>
+      </div>
+    </div>
+    <div class="pa-half">
+      <div class="pa-card">
+        <span class="source-tag">Palestinian Perspective</span>
+        <h2>${e.pa.title}</h2>
+        <p>${e.pa.body}</p>
+      </div>
+    </div>
+  `;
+
+  timeline.appendChild(block);
+});
+
+// Intersection observer for fade-in
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.05 });
+
+document.querySelectorAll('.event-block').forEach(b => observer.observe(b));
+
+// Active nav
+const navItems = document.querySelectorAll('.nav-item');
+const eventBlocks = document.querySelectorAll('.event-block');
+
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const slug = entry.target.id.replace('evt-', '');
+      navItems.forEach(n => {
+        n.classList.toggle('active', n.dataset.slug === slug);
+        if (n.dataset.slug === slug) {
+          n.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+        }
+      });
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-10% 0px -10% 0px' });
+
+eventBlocks.forEach(b => navObserver.observe(b));
+</script>
+</body>
+</html>
